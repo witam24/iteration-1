@@ -483,6 +483,12 @@ table.plain td code, table.plain th code { white-space: nowrap; }
 /* exercises sample */
 .sample { display: grid; gap: 6px; }
 .sample .io-in { font-size: .85rem; color: var(--muted); margin: 0; }
+.vartbl { border: 1px solid var(--rule); border-radius: var(--r); overflow: hidden; }
+.vartbl > .lab { padding: 8px 12px 6px; margin: 0; background: var(--sheet-2); border-bottom: 1px solid var(--rule); }
+.vartbl td:first-child { white-space: nowrap; width: 1%; }
+.sample .samp-n { margin: 6px 0 0; }
+.sample .out.expect { max-height: 26rem; }
+.dbg-list .prog.grp { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--rule); font-weight: 700; color: var(--pen); }
 .req { display: inline-block; font-size: .78rem; font-family: var(--f-code); padding: 1px 8px; border-radius: 999px; background: var(--pen-soft); color: var(--pen); font-weight: 600; margin-left: 8px; vertical-align: 2px; }
 
 @media (max-width: 1150px) { .tri { grid-template-columns: minmax(0, 1fr); } }
@@ -642,6 +648,7 @@ const S = {
   exCheck: '執行並檢查', exTraceMine: '逐步追蹤我的程式', exHint: (n, m) => `提示（${n}/${m}）`, exExpected: '預期輸出',
   exHintN: k => `提示 ${k}`, exPrev: '上一題', exNext: '下一題', exAnsShow: '參考答案', exAnsHide: '隱藏參考答案',
   exBack: i => `返回問題 ${i}`,
+  exVarsTitle: '程式須使用以下變量', exVarCol: '變量', exDescCol: '描述', exSampleN: n => `輸出範例 ${n}`,
   exCodeLabelWr: '在這裏編寫程式', exResetWr: '重新開始', exTaskWr: '題目', exTraceFocusWr: i => `編程練習問題 ${i}：`,
   exCodeLabelDbg: '程式碼（直接修改）', exResetDbg: '還原程式碼', exTaskDbg: '問題', exTraceFocusDbg: i => `除錯練習問題 ${i}：`,
   /* quiz */
@@ -710,7 +717,7 @@ const H = {
   pit2Title: 'break 的縮排決定它何時執行', pit2Text: 'break 沒有縮排在 if 之內，所以第一次迭代就一定會執行，循環只執行一次。',
   pit3Title: '只能放在循環之內', pit3Text: "在循環以外使用 break 或 continue，會出現 SyntaxError：'break' outside loop。",
   writeTitle: '編程練習',
-  writeLead: '閱讀題目，自行編寫程式，再按「執行並檢查」。網頁會用幾組不同的輸入測試你的程式，並比較輸出。輸入的語句已經寫好，請不要修改提示文字。',
+  writeLead: '閱讀題目，自行編寫程式，再按「執行並檢查」。網頁會用幾組不同的輸入測試你的程式，並比較輸出。輸入的語句已經寫好，請不要修改提示文字。丙部（情境程式編寫）要自行寫出整個程式，並使用指定的變量，提示文字及輸出格式須與輸出範例相同。',
   debugTitle: '除錯練習',
   debugLead: '每個程式都有錯誤。閱讀問題，直接修改程式碼，再按「執行並檢查」。不肯定錯在哪裏時，可以把程式送到追蹤器逐步追蹤。',
   quizTitle: '課堂小測', quizLead: '先在腦中追蹤變量，再選答案。每題都可以在追蹤器中逐步驗證。',
@@ -957,6 +964,38 @@ const PROBLEMS = [
     tests: [['91'], ['97'], ['2']],
     hints: ['先假設 is_prime = True，再用 for d in range(2, n) 逐個檢查可能的因數。', '如果 n % d == 0，表示找到因數：把 is_prime 設為 False，然後 break。'],
     explain: '一找到因數便 break，不用再檢查餘下的數。n = 2 時 range(2, 2) 是空的，is_prime 保持 True。' },
+  { group: '丙部　情境程式編寫', title: '溫度換算表', require: 'for', noAnswer: true, samples: 2,
+    problem: '科學科實驗需要一張攝氏轉華氏的對照表。輸入起始溫度、結束溫度及間距（都是整數，單位為攝氏），輸出換算表。華氏溫度 = 攝氏溫度 × 9 ÷ 5 + 32。結束溫度如果剛好在間距上，也要包括在表內。（for + range() 三參數）',
+    vars: [['start', '整數變數，起始溫度（攝氏）。'], ['finish', '整數變數，結束溫度（攝氏），如剛好在間距上亦須包括在表內。'], ['step', '整數變數，溫度的間距。'], ['c', '整數變數，循環變數，儲存目前的攝氏溫度。'], ['f', '浮點數變數，儲存 c 對應的華氏溫度。']],
+    start: '# 丙部：自行寫出整個程式（包括 input 語句）\n# 提示文字及輸出格式須與輸出範例相同\n',
+    solution: 'start = int(input("起始溫度："))\nfinish = int(input("結束溫度："))\nstep = int(input("間距："))\nfor c in range(start, finish + 1, step):\n    f = c * 9 / 5 + 32\n    print(c, "°C =", f, "°F")',
+    tests: [['0', '100', '25'], ['-10', '20', '10'], ['5', '30', '7'], ['0', '100', '30']],
+    hints: ['先用三個 input() 讀入 start、finish 和 step，記得用 int() 轉換為整數。', 'range() 的 stop 不包括在內。想一想：要包括 finish，stop 應寫甚麼？'],
+    explain: 'range() 的 stop 不包括在內，所以要寫 finish + 1，結束溫度剛好在間距上時才會包括在表內。用「/」相除的結果是浮點數，所以輸出 32.0。' },
+  { title: '壁報標題格式', require: 'for', noAnswer: true, samples: 2,
+    problem: '班會製作壁報，要把英文標題中每個單詞的第一個字母轉成大寫，其他字母保持不變。輸入英文標題（單詞之間以一個空格分隔），輸出修改後的標題。提示：ch.upper() 會傳回 ch 的大寫字母；可用一個布爾變數記住下一個字符是否單詞的開頭。（for 迭代字串、布爾變數）',
+    vars: [['title', '字串變數，儲存輸入的英文標題。'], ['result', '字串變數，儲存修改後的標題，初始值為空字串。'], ['new_word', '布爾變數，True 表示下一個字符是單詞的開頭。'], ['ch', '字串變數，循環變數，儲存 title 中目前處理的字符。']],
+    start: '# 丙部：自行寫出整個程式（包括 input 語句）\n# 提示文字及輸出格式須與輸出範例相同\n',
+    solution: 'title = input("輸入標題：")\nresult = ""\nnew_word = True\nfor ch in title:\n    if new_word:\n        result = result + ch.upper()\n    else:\n        result = result + ch\n    if ch == " ":\n        new_word = True\n    else:\n        new_word = False\nprint("修改後：" + result)',
+    tests: [['welcome to ict day'], ['the joy of coding'], ['python'], ['i love ICT']],
+    hints: ['第一個字符一定是單詞的開頭，所以 new_word 的初始值應是 True。', '每處理完一個字符，就要更新 new_word：剛處理的字符是空格時，下一個字符便是單詞的開頭。'],
+    explain: 'new_word 記住「下一個字符是否單詞的開頭」：開始時是 True，遇到空格後再變回 True，其他字符之後變為 False。' },
+  { title: '閱讀計劃', require: 'while', noAnswer: true, samples: 2,
+    problem: '小明計劃讀完一本小說。第 1 天讀 10 頁，之後每天比前一天多讀 5 頁；最後一天只需讀餘下的頁數。輸入小說頁數，輸出每天讀了多少頁及累計頁數，直至讀完，最後輸出共需多少天。（while 循環）',
+    vars: [['pages', '整數變數，小說的總頁數。'], ['read', '整數變數，儲存累計已讀的頁數。'], ['today', '整數變數，儲存當天要讀的頁數，第 1 天為 10。'], ['day', '整數變數，儲存目前是第幾天。']],
+    start: '# 丙部：自行寫出整個程式（包括 input 語句）\n# 提示文字及輸出格式須與輸出範例相同\n',
+    solution: 'pages = int(input("輸入小說頁數："))\nread = 0\ntoday = 10\nday = 0\nwhile read < pages:\n    day = day + 1\n    if read + today > pages:\n        today = pages - read\n    read = read + today\n    print("第", day, "天讀", today, "頁，累計", read, "頁")\n    today = today + 5\nprint("共需", day, "天讀完")',
+    tests: [['100'], ['60'], ['10'], ['5']],
+    hints: ['事先不知道要讀多少天，所以用 while：未讀完（read 小於 pages）便繼續。', '最後一天：如果今天要讀的頁數會超過總頁數，就只讀餘下的頁數。輸出之後才把 today 加 5。'],
+    explain: '「直至讀完」不知道要重複多少次，所以用 while。最後一天先檢查 read + today 會否超過 pages，超過便只讀餘下的頁數。' },
+  { title: '校內訪客停車場', require: ['while', 'break', 'continue'], noAnswer: true, samples: 2,
+    problem: '學校訪客停車場有 3 個車位，開始時全部空置。保安員輸入「I」表示一輛車駛入、「O」表示一輛車駛出、「Q」表示收工。車位已滿時有車駛入，顯示「車位已滿」；沒有車時輸入「O」，顯示「沒有車輛」；輸入其他字母則顯示「輸入錯誤」。以上三種情況都不作記錄。每次有效操作後顯示剩餘車位；收工時輸出全日駛入的車輛總數。（while True、break、continue）',
+    vars: [['cars', '整數變數，儲存停車場內的車輛數目（0 至 3）。'], ['total_in', '整數變數，儲存全日駛入的車輛總數。'], ['action', '字串變數，儲存保安員輸入的操作（I、O 或 Q）。']],
+    start: '# 丙部：自行寫出整個程式（包括 input 語句）\n# 提示文字及輸出格式須與輸出範例相同\n',
+    solution: 'cars = 0\ntotal_in = 0\nwhile True:\n    action = input("輸入操作（I/O/Q）：")\n    if action == "Q":\n        break\n    if action == "I":\n        if cars == 3:\n            print("車位已滿")\n            continue\n        cars = cars + 1\n        total_in = total_in + 1\n    elif action == "O":\n        if cars == 0:\n            print("沒有車輛")\n            continue\n        cars = cars - 1\n    else:\n        print("輸入錯誤")\n        continue\n    print("剩餘車位", 3 - cars)\nprint("全日駛入", total_in, "輛車")',
+    tests: [['O', 'I', 'I', 'O', 'Q'], ['I', 'I', 'I', 'I', 'X', 'O', 'Q'], ['Q'], ['O', 'I', 'O', 'O', 'i', 'I', 'Q']],
+    hints: ['不知道保安員會輸入多少次，用 while True 重複；輸入「Q」時用 break 離開循環。', '三種「不作記錄」的情況顯示訊息後，用 continue 跳過「剩餘車位」那一行，直接回到循環首行。'],
+    explain: 'while True 只能靠 break 離開；continue 令三種無效情況跳過顯示剩餘車位的語句。total_in 只在成功駛入時才加 1。' },
 ];
 
 const PIT = {
@@ -1276,6 +1315,7 @@ const S = {
   exCheck: 'Run and check', exTraceMine: 'Trace my program', exHint: (n, m) => `Hint (${n}/${m})`, exExpected: 'Expected output',
   exHintN: k => `Hint ${k}`, exPrev: 'Previous', exNext: 'Next', exAnsShow: 'Suggested answer', exAnsHide: 'Hide answer',
   exBack: i => `Back to task ${i}`,
+  exVarsTitle: 'Your program must use these variables', exVarCol: 'Variable', exDescCol: 'Description', exSampleN: n => `Sample output ${n}`,
   exCodeLabelWr: 'Write your program here', exResetWr: 'Start over', exTaskWr: 'Task', exTraceFocusWr: i => `Coding task ${i}: `,
   exCodeLabelDbg: 'Code (edit it directly)', exResetDbg: 'Restore code', exTaskDbg: 'Problem', exTraceFocusDbg: i => `Debugging task ${i}: `,
   /* quiz */
@@ -1344,7 +1384,7 @@ const H = {
   pit2Title: 'The indentation of break decides when it runs', pit2Text: 'break is not indented inside the if, so it always runs in the first iteration and the loop runs only once.',
   pit3Title: 'Only inside a loop', pit3Text: "Using break or continue outside a loop gives SyntaxError: 'break' outside loop.",
   writeTitle: 'Coding tasks',
-  writeLead: 'Read the task, write the program yourself, then press "Run and check". The page tests your program with several different inputs and compares the output. The input line is already written; do not change its prompt text.',
+  writeLead: 'Read the task, write the program yourself, then press "Run and check". The page tests your program with several different inputs and compares the output. The input line is already written; do not change its prompt text. In Section C (scenario programming), write the whole program yourself using the given variables; the prompts and output format must match the sample output.',
   debugTitle: 'Debugging',
   debugLead: 'Every program here has a bug. Read the problem, edit the code directly, then press "Run and check". If you are not sure where the bug is, send the program to the tracer and step through it.',
   quizTitle: 'Quiz', quizLead: 'Trace the variables in your head first, then choose an answer. Every question can be checked step by step in the tracer.',
@@ -1591,6 +1631,38 @@ const PROBLEMS = [
     tests: [['91'], ['97'], ['2']],
     hints: ['Start by assuming is_prime = True, then check each possible factor with for d in range(2, n).', 'If n % d == 0 you have found a factor: set is_prime to False, then break.'],
     explain: 'As soon as a factor is found, break stops the loop, so the remaining numbers are not checked. When n = 2, range(2, 2) is empty and is_prime stays True.' },
+  { group: 'Section C · Scenario programming', title: 'Temperature table', require: 'for', noAnswer: true, samples: 2,
+    problem: 'A science experiment needs a Celsius-to-Fahrenheit table. Input the start temperature, end temperature and interval (all integers, in °C) and print the table. Fahrenheit = Celsius × 9 ÷ 5 + 32. If the end temperature falls exactly on an interval, it must be included. (for + three-argument range())',
+    vars: [['start', 'Integer: the start temperature (°C).'], ['finish', 'Integer: the end temperature (°C); include it if it falls exactly on an interval.'], ['step', 'Integer: the temperature interval.'], ['c', 'Integer: the loop variable, the current Celsius temperature.'], ['f', 'Float: the Fahrenheit temperature for c.']],
+    start: '# Section C: write the whole program yourself (including the input lines)\n# The prompts and output format must match the sample output\n',
+    solution: 'start = int(input("Start temperature: "))\nfinish = int(input("End temperature: "))\nstep = int(input("Interval: "))\nfor c in range(start, finish + 1, step):\n    f = c * 9 / 5 + 32\n    print(c, "°C =", f, "°F")',
+    tests: [['0', '100', '25'], ['-10', '20', '10'], ['5', '30', '7'], ['0', '100', '30']],
+    hints: ['Read start, finish and step with three input() calls, converting each with int().', 'The stop of range() is not included. To include finish, what should stop be?'],
+    explain: 'stop is not included in range(), so finish + 1 is needed for the end temperature to appear when it falls on an interval. Dividing with "/" gives a float, so 32.0 is printed.' },
+  { title: 'Poster title', require: 'for', noAnswer: true, samples: 2,
+    problem: 'For a class poster, the first letter of every word in an English title must be changed to a capital, leaving the other letters unchanged. Input the title (words separated by one space) and print the changed title. Hint: ch.upper() returns the capital of ch; a Boolean variable can remember whether the next character starts a word. (for over a string, Boolean variable)',
+    vars: [['title', 'String: the title entered.'], ['result', 'String: the changed title; starts as an empty string.'], ['new_word', 'Boolean: True means the next character starts a word.'], ['ch', 'String: the loop variable, the character of title being processed.']],
+    start: '# Section C: write the whole program yourself (including the input lines)\n# The prompts and output format must match the sample output\n',
+    solution: 'title = input("Enter the title: ")\nresult = ""\nnew_word = True\nfor ch in title:\n    if new_word:\n        result = result + ch.upper()\n    else:\n        result = result + ch\n    if ch == " ":\n        new_word = True\n    else:\n        new_word = False\nprint("Changed: " + result)',
+    tests: [['welcome to ict day'], ['the joy of coding'], ['python'], ['i love ICT']],
+    hints: ['The first character always starts a word, so new_word should start as True.', 'After each character, update new_word: if the character just processed is a space, the next one starts a word.'],
+    explain: 'new_word remembers whether the next character starts a word: True at the start, True again after a space, and False after any other character.' },
+  { title: 'Reading plan', require: 'while', noAnswer: true, samples: 2,
+    problem: 'Ming plans to finish a novel. He reads 10 pages on day 1, and 5 pages more than the day before on each following day; on the last day he only reads the pages left. Input the number of pages, print how many pages he reads each day and the running total until he finishes, then print how many days it takes. (while loop)',
+    vars: [['pages', 'Integer: the total number of pages.'], ['read', 'Integer: the running total of pages read.'], ['today', 'Integer: the pages to read today; 10 on day 1.'], ['day', 'Integer: the current day number.']],
+    start: '# Section C: write the whole program yourself (including the input lines)\n# The prompts and output format must match the sample output\n',
+    solution: 'pages = int(input("Number of pages: "))\nread = 0\ntoday = 10\nday = 0\nwhile read < pages:\n    day = day + 1\n    if read + today > pages:\n        today = pages - read\n    read = read + today\n    print("Day", day, "read", today, "pages, total", read, "pages")\n    today = today + 5\nprint("Finished in", day, "days")',
+    tests: [['100'], ['60'], ['10'], ['5']],
+    hints: ['You do not know how many days it takes, so use while: keep going while read is less than pages.', 'Last day: if today\'s pages would go past the total, read only the pages left. Add 5 to today after printing.'],
+    explain: '"Until finished" means the number of repeats is unknown, so use while. On the last day, check whether read + today would pass pages, and if so read only what is left.' },
+  { title: 'Visitor car park', require: ['while', 'break', 'continue'], noAnswer: true, samples: 2,
+    problem: 'The school visitor car park has 3 spaces, all empty at the start. The guard enters "I" when a car comes in, "O" when a car leaves and "Q" to finish for the day. If a car comes in when the car park is full, show "Car park full"; if "O" is entered when there are no cars, show "No cars"; for any other letter, show "Invalid input". None of these three cases is recorded. After each valid action, show the spaces left; when finishing, print the total number of cars that came in. (while True, break, continue)',
+    vars: [['cars', 'Integer: the number of cars in the car park (0 to 3).'], ['total_in', 'Integer: the total number of cars that came in today.'], ['action', 'String: the action entered by the guard (I, O or Q).']],
+    start: '# Section C: write the whole program yourself (including the input lines)\n# The prompts and output format must match the sample output\n',
+    solution: 'cars = 0\ntotal_in = 0\nwhile True:\n    action = input("Enter action (I/O/Q): ")\n    if action == "Q":\n        break\n    if action == "I":\n        if cars == 3:\n            print("Car park full")\n            continue\n        cars = cars + 1\n        total_in = total_in + 1\n    elif action == "O":\n        if cars == 0:\n            print("No cars")\n            continue\n        cars = cars - 1\n    else:\n        print("Invalid input")\n        continue\n    print("Spaces left", 3 - cars)\nprint("Cars in today:", total_in)',
+    tests: [['O', 'I', 'I', 'O', 'Q'], ['I', 'I', 'I', 'I', 'X', 'O', 'Q'], ['Q'], ['O', 'I', 'O', 'O', 'i', 'I', 'Q']],
+    hints: ['You do not know how many actions the guard will enter, so repeat with while True and use break when "Q" is entered.', 'In the three "not recorded" cases, show the message and then use continue to skip the "Spaces left" line and go back to the loop header.'],
+    explain: 'while True can only be left with break; continue makes the three invalid cases skip the line that shows the spaces left. total_in only goes up when a car actually comes in.' },
 ];
 
 const PIT = {
@@ -3497,7 +3569,8 @@ function makeExercises(cfg) {
       if (kind) return { ok: false, kind, r, exp, last, inputs: tests[t] };
     }
     const bare = code.split('\n').map(l => l.replace(/#.*/, '')).join('\n');
-    if (d.require && !new RegExp('\\b' + d.require + '\\b').test(bare)) return { ok: false, kind: 'require', need: d.require };
+    const miss = [].concat(d.require || []).find(kw => !new RegExp('\\b' + kw + '\\b').test(bare));
+    if (miss) return { ok: false, kind: 'require', need: miss };
     if (!/\b(for|while)\b/.test(bare)) return { ok: false, kind: 'noloop' };
     return { ok: true };
   }
@@ -3538,15 +3611,20 @@ function makeExercises(cfg) {
   function render() {
     const N = items.length, i = X.i, d = items[i], tests = testsOf(d), nh = X.hints[i];
     $(cfg.list).innerHTML = `<div class="prog">${S.exDone(X.solved.size, N)}</div>` + items.map((q, k) =>
-      `<button type="button" data-i="${k}" class="${k === i ? 'cur' : ''}"${k === i ? ' aria-current="true"' : ''}><span class="qn">${k + 1}</span><span class="qt">${esc(q.title)}</span><span class="st">${X.solved.has(k) ? '✓' : ''}</span></button>`).join('');
+      (q.group ? `<div class="prog grp">${esc(q.group)}</div>` : '') + `<button type="button" data-i="${k}" class="${k === i ? 'cur' : ''}"${k === i ? ' aria-current="true"' : ''}><span class="qn">${k + 1}</span><span class="qt">${esc(q.title)}</span><span class="st">${X.solved.has(k) ? '✓' : ''}</span></button>`).join('');
     const startSet = new Set(d.start.split('\n'));
-    const answer = X.ans[i] ? `<div class="answer"><span class="lab" style="padding:10px 12px 0">${cfg.diffAnswer ? S.exAnsTitleDiff : S.exAnsTitle}</span><pre>${d.solution.split('\n').map(l => `<span class="aline${cfg.diffAnswer && !startSet.has(l) ? ' add' : ''}">${hl(l) || ' '}</span>`).join('')}</pre><p>${esc(d.explain)}</p></div>` : '';
-    const sampleIn = tests[0].length ? `<p class="io-in">${S.exSampleIn(tests[0].map(C).join(S.listSep))}</p>` : '';
+    const answer = X.ans[i] && !d.noAnswer ? `<div class="answer"><span class="lab" style="padding:10px 12px 0">${cfg.diffAnswer ? S.exAnsTitleDiff : S.exAnsTitle}</span><pre>${d.solution.split('\n').map(l => `<span class="aline${cfg.diffAnswer && !startSet.has(l) ? ' add' : ''}">${hl(l) || ' '}</span>`).join('')}</pre><p>${esc(d.explain)}</p></div>` : '';
+    const nSamp = Math.min(tests.length, d.samples || 1);
+    const samples = Array.from({ length: nSamp }, (_, t) => (nSamp > 1 ? `<span class="lab samp-n">${S.exSampleN(t + 1)}</span>` : '')
+      + (tests[t].length ? `<p class="io-in">${S.exSampleIn(tests[t].map(C).join(S.listSep))}</p>` : '')
+      + `<pre class="out expect">${esc(expected[i][t])}</pre>`).join('');
     const more = tests.length > 1 ? `<p class="tests-note">${S.exMoreTests(tests.length)}</p>` : '';
+    const varTbl = d.vars ? `<div class="vartbl"><span class="lab">${S.exVarsTitle}</span><div style="overflow-x:auto"><table class="plain"><thead><tr><th>${S.exVarCol}</th><th>${S.exDescCol}</th></tr></thead><tbody>${d.vars.map(([n, t]) => `<tr><td><code>${esc(n)}</code></td><td>${esc(t)}</td></tr>`).join('')}</tbody></table></div></div>` : '';
     $(cfg.main).innerHTML = `
-      <div class="sheet-head"><h3>${S.exQ(i + 1, N, esc(d.title))}${d.require ? `<span class="req">${S.reqTag(d.require)}</span>` : ''}</h3>${X.solved.has(i) ? `<span class="chip t-true">${S.exSolved}</span>` : ''}</div>
+      <div class="sheet-head"><h3>${S.exQ(i + 1, N, esc(d.title))}${d.require ? `<span class="req">${S.reqTag([].concat(d.require).join(S.listSep))}</span>` : ''}</h3>${X.solved.has(i) ? `<span class="chip t-true">${S.exSolved}</span>` : ''}</div>
       <div class="dbg-body">
         <p class="task"><span class="tag">${cfg.taskTag}</span>${d.problem}</p>
+        ${varTbl}
         <div class="dbg-cols">
           <div>
             <label class="lab" for="${cfg.prefix}Src">${cfg.codeLabel}</label>
@@ -3560,8 +3638,7 @@ function makeExercises(cfg) {
           </div>
           <div class="sample">
             <span class="lab">${S.exExpected}</span>
-            ${sampleIn}
-            <pre class="out expect">${esc(expected[i][0])}</pre>
+            ${samples}
             ${more}
           </div>
         </div>
@@ -3570,7 +3647,7 @@ function makeExercises(cfg) {
         ${answer}
         <div class="dbg-nav">
           <button type="button" class="btn" data-act="prev"${i === 0 ? ' disabled' : ''}>← ${S.exPrev}</button>
-          <button type="button" class="btn small" data-act="answer">${X.ans[i] ? S.exAnsHide : S.exAnsShow}</button>
+          ${d.noAnswer ? '<span></span>' : `<button type="button" class="btn small" data-act="answer">${X.ans[i] ? S.exAnsHide : S.exAnsShow}</button>`}
           <button type="button" class="btn" data-act="next"${i === N - 1 ? ' disabled' : ''}>${S.exNext} →</button>
         </div>
       </div>`;
